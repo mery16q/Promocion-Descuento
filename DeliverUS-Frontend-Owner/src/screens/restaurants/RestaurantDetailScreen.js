@@ -4,7 +4,7 @@ import { StyleSheet, View, FlatList, ImageBackground, Image, Pressable } from 'r
 import { showMessage } from 'react-native-flash-message'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { getDetail } from '../../api/RestaurantEndpoints'
-import { remove } from '../../api/ProductEndpoints'
+import { remove, promoted } from '../../api/ProductEndpoints'
 import ImageCard from '../../components/ImageCard'
 import TextRegular from '../../components/TextRegular'
 import TextSemiBold from '../../components/TextSemibold'
@@ -102,9 +102,52 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
             </TextRegular>
           </View>
         </Pressable>
+
+        {route.params.descuento > 0 &&
+        <Pressable
+            onPress={() => changePromotion(item) }
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed
+                  ? GlobalStyles.brandBlueTap
+                  : GlobalStyles.brandBlue
+              },
+              styles.actionButton
+            ]}>
+          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+            <MaterialCommunityIcons name='pencil' color={'white'} size={20}/>
+            <TextRegular textStyle={styles.text}>
+            {item.promocionado ? 'Demote' : 'Promote'}
+            </TextRegular>
+          </View>
+        </Pressable>
+  }
         </View>
       </ImageCard>
     )
+  }
+
+  const changePromotion = async (item) => {
+    try {
+      await promoted(item.id)
+      await fetchRestaurantDetail()
+      setProductToBeDeleted(null)
+      showMessage({
+        message: `Product ${item.name} succesfully removed`,
+        type: 'success',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    } catch (error) {
+      console.log(error)
+      setProductToBeDeleted(null)
+      showMessage({
+        message: `Product ${item.name} could not be removed.`,
+        type: 'error',
+        style: GlobalStyles.flashStyle,
+        titleStyle: GlobalStyles.flashTextStyle
+      })
+    }
   }
 
   const renderEmptyProductsList = () => {

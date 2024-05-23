@@ -23,6 +23,7 @@ const create = [
   check('productCategoryId').exists().isInt({ min: 1 }).toInt(),
   check('restaurantId').exists().isInt({ min: 1 }).toInt(),
   check('restaurantId').custom(checkRestaurantExists),
+  // check('promoted').exists().isBoolean(),
   check('image').custom((value, { req }) => {
     return checkFileIsImage(req, 'image')
   }).withMessage('Please upload an image with format (jpeg, png).'),
@@ -39,6 +40,7 @@ const update = [
   check('availability').optional().isBoolean().toBoolean(),
   check('productCategoryId').exists().isInt({ min: 1 }).toInt(),
   check('restaurantId').not().exists(),
+  // check('promoted').exists().isBoolean(),
   check('image').custom((value, { req }) => {
     return checkFileIsImage(req, 'image')
   }).withMessage('Please upload an image with format (jpeg, png).'),
